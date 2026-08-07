@@ -647,30 +647,13 @@ fun HomePageCardContent(
         }
 
         else -> {
+            val isEpisode = item?.type == BaseItemKind.EPISODE
             val imageType =
-                remember(item, viewOptions) {
-                    if (item?.type == BaseItemKind.EPISODE) {
-                        viewOptions.episodeImageType.imageType
-                    } else {
-                        viewOptions.imageType.imageType
-                    }
-                }
+                if (isEpisode) viewOptions.episodeImageType.imageType else viewOptions.imageType.imageType
             val ratio =
-                remember(item, viewOptions) {
-                    if (item?.type == BaseItemKind.EPISODE) {
-                        viewOptions.episodeAspectRatio.ratio
-                    } else {
-                        viewOptions.aspectRatio.ratio
-                    }
-                }
+                if (isEpisode) viewOptions.episodeAspectRatio.ratio else viewOptions.aspectRatio.ratio
             val scale =
-                remember(item, viewOptions) {
-                    if (item?.type == BaseItemKind.EPISODE) {
-                        viewOptions.episodeContentScale.scale
-                    } else {
-                        viewOptions.contentScale.scale
-                    }
-                }
+                if (isEpisode) viewOptions.episodeContentScale.scale else viewOptions.contentScale.scale
             if (viewOptions.showTitles) {
                 BannerCardWithTitle(
                     title = item?.title,
