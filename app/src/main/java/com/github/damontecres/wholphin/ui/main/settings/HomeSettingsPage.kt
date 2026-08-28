@@ -31,6 +31,7 @@ import androidx.tv.material3.surfaceColorAtElevation
 import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.data.model.HomeRowConfig
 import com.github.damontecres.wholphin.data.model.HomeRowViewOptions
+import com.github.damontecres.wholphin.data.model.parentIdOrNull
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.UserPreferences
 import com.github.damontecres.wholphin.ui.components.BasicDialog
@@ -215,10 +216,22 @@ fun HomeSettingsPage(
                                         }
                                     }
                                 val defaultViewOptions =
-                                    remember(row.config) {
+                                    remember(row.config, state.libraries) {
                                         when (row.config) {
-                                            is HomeRowConfig.Genres -> HomeRowViewOptions.genreDefault
-                                            else -> HomeRowViewOptions()
+                                            is HomeRowConfig.Genres,
+                                            is HomeRowConfig.Studios,
+                                            -> {
+                                                HomeRowViewOptions.genreDefault
+                                            }
+
+                                            else -> {
+                                                val parentId = row.config.parentIdOrNull
+                                                HomeRowViewOptions.defaultFor(
+                                                    state.libraries
+                                                        .firstOrNull { it.itemId == parentId }
+                                                        ?.collectionType,
+                                                )
+                                            }
                                         }
                                     }
                                 HomeRowSettings(

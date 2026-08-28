@@ -277,10 +277,6 @@ class HomeSettingsViewModel
             viewModelScope.launchIO {
                 val viewOptions =
                     when (library.collectionType) {
-                        CollectionType.MUSIC -> {
-                            HomeRowViewOptions(aspectRatio = AspectRatio.SQUARE)
-                        }
-
                         CollectionType.HOMEVIDEOS,
                         CollectionType.MUSICVIDEOS,
                         -> {
@@ -290,7 +286,7 @@ class HomeSettingsViewModel
                         }
 
                         else -> {
-                            HomeRowViewOptions()
+                            HomeRowViewOptions.defaultFor(library.collectionType)
                         }
                     }
                 val id = idCounter++

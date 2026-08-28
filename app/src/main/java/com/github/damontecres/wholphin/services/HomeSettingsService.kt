@@ -7,6 +7,7 @@ import com.github.damontecres.wholphin.data.ServerRepository
 import com.github.damontecres.wholphin.data.model.BaseItem
 import com.github.damontecres.wholphin.data.model.HomePageSettings
 import com.github.damontecres.wholphin.data.model.HomeRowConfig
+import com.github.damontecres.wholphin.data.model.HomeRowViewOptions
 import com.github.damontecres.wholphin.data.model.SUPPORTED_HOME_PAGE_SETTINGS_VERSION
 import com.github.damontecres.wholphin.data.model.createGenreDestination
 import com.github.damontecres.wholphin.data.model.createStudioDestination
@@ -293,7 +294,11 @@ class HomeSettingsService
                             HomeRowConfigDisplay(
                                 id = index,
                                 title = title,
-                                config = HomeRowConfig.RecentlyAdded(parentId),
+                                config =
+                                    HomeRowConfig.RecentlyAdded(
+                                        parentId,
+                                        HomeRowViewOptions.defaultFor(it.collectionType),
+                                    ),
                             )
                         }
                     }
@@ -409,7 +414,11 @@ class HomeSettingsService
                                                 R.string.recently_added_in,
                                                 it.name ?: "",
                                             ),
-                                        config = HomeRowConfig.RecentlyAdded(it.id),
+                                        config =
+                                            HomeRowConfig.RecentlyAdded(
+                                                it.id,
+                                                HomeRowViewOptions.defaultFor(it.collectionType),
+                                            ),
                                     )
                                 }
                             } else if (config != null) {
