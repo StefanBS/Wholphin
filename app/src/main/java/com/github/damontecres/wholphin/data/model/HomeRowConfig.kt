@@ -11,6 +11,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import org.jellyfin.sdk.model.api.BaseItemKind
+import org.jellyfin.sdk.model.api.CollectionType
 import org.jellyfin.sdk.model.api.request.GetItemsRequest
 import org.jellyfin.sdk.model.serializer.UUIDSerializer
 import java.util.UUID
@@ -233,11 +234,55 @@ data class HomeRowViewOptions(
                 aspectRatio = AspectRatio.WIDE,
             )
 
+        val musicDefault =
+            HomeRowViewOptions(
+                heightDp = Cards.HEIGHT_EPISODE,
+                aspectRatio = AspectRatio.SQUARE,
+            )
+
         val liveTvDefault =
             HomeRowViewOptions(
                 heightDp = Cards.HEIGHT_LIVE_TV,
                 aspectRatio = AspectRatio.WIDE,
                 contentScale = PrefContentScale.FIT,
             )
+
+        /**
+         * Album art is square, so the generic tall poster card stretches it. Other collection types
+         * also have their own card style inside their library, but changing their defaults here
+         * would restyle existing rows on reset, so they keep the generic default.
+         */
+        fun defaultFor(collectionType: CollectionType?): HomeRowViewOptions =
+            if (collectionType == CollectionType.MUSIC) musicDefault else HomeRowViewOptions()
     }
 }
+
+/**
+ * The `when` is exhaustive so that a new [HomeRowConfig] carrying a parent cannot be added without
+ * deciding whether it belongs here.
+ */
+val HomeRowConfig.parentIdOrNull: UUID?
+    get() =
+        when (this) {
+            is HomeRowConfig.ByParent -> parentId
+
+            is HomeRowConfig.Genres -> parentId
+
+            is HomeRowConfig.RecentlyAdded -> parentId
+
+            is HomeRowConfig.RecentlyReleased -> parentId
+
+            is HomeRowConfig.Studios -> parentId
+
+            is HomeRowConfig.Suggestions -> parentId
+
+            is HomeRowConfig.ContinueWatching,
+            is HomeRowConfig.ContinueWatchingCombined,
+            is HomeRowConfig.Favorite,
+            is HomeRowConfig.GetItems,
+            is HomeRowConfig.NextUp,
+            is HomeRowConfig.Recordings,
+            is HomeRowConfig.TvChannels,
+            is HomeRowConfig.TvPrograms,
+            -> null
+        }
