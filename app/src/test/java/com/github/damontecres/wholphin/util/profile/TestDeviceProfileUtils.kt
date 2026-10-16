@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.jellyfin.sdk.model.api.CodecType
 import org.jellyfin.sdk.model.api.DeviceProfile
+import org.jellyfin.sdk.model.api.DlnaProfileType
 import org.jellyfin.sdk.model.api.ProfileConditionValue
 import org.junit.Assert
 import org.junit.Test
@@ -11,10 +12,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/**
- * Verifies that forceEnabledHdr/forceDisabledHdr correctly override the device's own
- * codec-capability detection when building the unsupported video range type list.
- */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [30])
 class TestDeviceProfileUtils {
@@ -137,5 +134,21 @@ class TestDeviceProfileUtils {
                 forceDisabledHdr = setOf(WholphinVideoRangeType.DOVI.serialName),
             )
         Assert.assertTrue(unsupportedRangeTypes(profile, Codec.Video.AV1).contains(WholphinVideoRangeType.DOVI.serialName))
+    }
+
+    private fun transcodingAudioCodecs(
+        profile: DeviceProfile,
+        type: DlnaProfileType,
+    ): Set<String> =
+        profile.transcodingProfiles
+            .single { it.type == type }
+            .audioCodec
+            .split(",")
+            .toSet()
+
+    @Test
+    fun `Test video transcoding allows all audio codecs when not preferring AC3`() {
+        val profile = buildProfile(mockk(relaxed = true))
+        Assert.assertEquals(supportedAudioCodecs.toSet(), transcodingAudioCodecs(profile, DlnaProfileType.VIDEO))
     }
 }
